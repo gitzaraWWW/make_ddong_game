@@ -2,57 +2,77 @@
 //
 
 #include <stdio.h>
-#include <conio.h> // Windows 환경에서 getch 사용을 위한 헤더파일
 #include <stdlib.h>
 #include <time.h>
 
-// 초기화 함수
-void Initialize() {
-    printf("게임 초기화 중...\n");
-}
+#define MAX_LAYERS 10
 
-// 렌더링 함수
-void Render() {
-    printf("화면을 렌더링 중...\n");
+const char* ingredients[] = {
+    "빵",      // q
+    "패티",    // w
+    "치즈",    // e
+    "양상추",  // r
+    "토마토",  // a
+    "감자튀김", // s
+    "콜라"     // d
+};
 
-}
-
-// 업데이트 함수 (입력 처리 포함)
-void Update() {
-    if (_kbhit()) { // 키가 눌렸는지 확인
-        char key = _getch(); // 키 입력을 받음
-        printf("입력된 키: %c\n", key);
-
-        // 키에 따른 동작 추가 가능
-        if (key == 'q') {
-            printf("게임 종료...\n");
-            exit(0); // 'q'를 입력하면 게임 종료
-        }
-    }
-}
-
-// 메인 게임 루프
-void GameLoop() {
-    Initialize();
-
-    clock_t start_time = clock(); // 현재 시간을 기록
-    while (1) {
-        Update(); // Update는 계속 호출하여 키 입력을 처리
-        // 현재 시간과 시작 시간의 차이를 확인하여 1초마다 렌더링
-        if ((clock() - start_time) >= CLOCKS_PER_SEC) { // CLOCKS_PER_SEC는 1초
-            Render();
-            start_time = clock(); // 시간을 초기화하여 다음 1초를 기다림
-        }
-
-
-
+void display_hamburger(const char* layers[], int count) {
+    printf("현재 햄버거:\n");
+    for (int i = count - 1; i >= 0; i--) {
+        printf("%s\n", layers[i]);
     }
 }
 
 int main() {
-    GameLoop();
+    const char* burger[MAX_LAYERS]; // 쌓인 재료를 저장할 배열
+    int layers = 0;
+    char choice;
+
+    srand(time(NULL)); // 난수 초기화
+
+    printf("햄버거 쌓기 게임에 오신 것을 환영합니다!\n");
+    printf("재료 선택: q(빵), w(패티), e(치즈), r(양상추), a(토마토), s(감자튀김), d(콜라)\n");
+
+    while (layers < MAX_LAYERS) {
+        printf("재료를 선택하세요: ");
+        scanf_s(" %c", &choice, sizeof(choice)); // scanf_s 사용
+
+        int ingredient_index = -1;
+
+        // 선택한 키에 따라 재료 인덱스 결정
+        switch (choice) {
+        case 'q': ingredient_index = 0; break; // 빵
+        case 'w': ingredient_index = 1; break; // 패티
+        case 'e': ingredient_index = 2; break; // 치즈
+        case 'r': ingredient_index = 3; break; // 양상추
+        case 'a': ingredient_index = 4; break; // 토마토
+        case 's': ingredient_index = 5; break; // 감자튀김
+        case 'd': ingredient_index = 6; break; // 콜라
+        default: printf("잘못된 입력입니다. 다시 시도하세요.\n"); continue;
+        }
+
+        // 재료 추가
+        printf("추가된 재료: %s\n", ingredients[ingredient_index]);
+        burger[layers] = ingredients[ingredient_index]; // 재료 저장
+        layers++;
+
+        display_hamburger(burger, layers); // 쌓인 햄버거 표시
+
+        // 계속 쌓을지 결정
+        if (layers < MAX_LAYERS) {
+            printf("계속 하시겠습니까? (y/n): ");
+            scanf_s(" %c", &choice, sizeof(choice)); // scanf_s 사용
+            if (choice != 'y') {
+                break;
+            }
+        }
+    }
+
+    printf("게임 종료! 쌓은 햄버거 층 수: %d\n", layers);
     return 0;
 }
+
 // 프로그램 실행: <Ctrl+F5> 또는 [디버그] > [디버깅하지 않고 시작] 메뉴
 // 프로그램 디버그: <F5> 키 또는 [디버그] > [디버깅 시작] 메뉴
 
